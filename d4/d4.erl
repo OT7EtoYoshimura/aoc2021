@@ -2,19 +2,19 @@
 -export([both/0]).
 -define(FILENAME, d4_input).
 
--type status() :: marked | unmarked.
--type cell()   :: {GuessNumber :: integer(), status()}.
--type row()    :: [cell()].
--type board()  :: [row()].
--type boards() :: [board()].
+-type status()	:: marked | unmarked.
+-type cell()	:: {GuessNumber :: integer(), status()}.
+-type row()		:: [cell()].
+-type board()	:: [row()].
+-type boards()	:: [board()].
 
--spec markBoards(boards(), ChosenNums :: [integer()], ChosenNum :: integer()) -> exit.
--spec markBoard(board(),   ChosenNum :: integer())	 -> board().
--spec markRow(row(),	   ChosenNum :: integer())	 -> row().
--spec markCell(cell(),	   ChosenNum :: integer())	 -> cell().
--spec checkBoard(board()) -> true | false.
--spec checkRow(row())	  -> true | false.
--spec checkCell(cell())	  -> true | false.
+-spec markBoards(boards() | [[]], ChosenNums :: [integer()] | []) -> exit.
+-spec markBoard(board(),   ChosenNum :: integer()) -> board().
+-spec markRow(row(),	   ChosenNum :: integer()) -> row().
+-spec markCell(cell(),	   ChosenNum :: integer()) -> cell().
+-spec checkBoard(board())	-> true | false.
+-spec checkRow(row())		-> true | false.
+-spec checkCell(cell())		-> true | false.
 -spec sum([] | [cell()], Acc :: integer()) -> acc.
 
 both() ->
@@ -26,12 +26,12 @@ main() ->
 	ChosenNums = lists:map(fun binary_to_integer/1, string:lexemes(Chosen, ",")),
 	BinaryBoardsList = [binary:split(Board, <<"\n">>, [global, trim_all]) || Board <- Boards],
 	ProperBoards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(Number) -> {binary_to_integer(Number), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BinaryBoardsList), %% God, fogive me for this
-	markBoards(ProperBoards, tl(ChosenNums), hd(ChosenNums)).
+	markBoards(ProperBoards, ChosenNums).
 
-markBoards(Boards, [NextNum|ChosenNums], ChosenNum) ->
+markBoards(Boards, [ChosenNum|ChosenNums]) ->
 	MarkedBoards = lists:map(fun(Board) -> markBoard(Board, ChosenNum) end, Boards),
-	markBoards(MarkedBoards, ChosenNums, NextNum);
-markBoards(_,_,_) ->
+	markBoards(MarkedBoards, ChosenNums);
+markBoards(_,_) ->
 	exit(ok).
 markBoard([], _) ->
 	[];
