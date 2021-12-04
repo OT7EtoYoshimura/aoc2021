@@ -1,3 +1,7 @@
+%% I was too busy to finish p2 but I wanted to know how someone had solved this so I found this on
+%% erlangforums.org. Great solution! Learn from it yourself too
+%% https://erlangforums.com/t/advent-of-code-2021-day-3/726/2
+
 -module(d3a).
 -compile(export_all).
 
