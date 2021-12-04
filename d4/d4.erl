@@ -12,9 +12,9 @@
 -spec markBoard(board(),   ChosenNum :: integer())	 -> board().
 -spec markRow(row(),	   ChosenNum :: integer())	 -> row().
 -spec markCell(cell(),	   ChosenNum :: integer())	 -> cell().
--spec checkBoard(board())	-> true | false.
--spec checkRow(row())		-> true | false.
--spec checkCell(cell())		-> true | false.
+-spec checkBoard(board()) -> true | false.
+-spec checkRow(row())	  -> true | false.
+-spec checkCell(cell())	  -> true | false.
 -spec sum([] | [cell()], Acc :: integer()) -> acc.
 
 both() ->
@@ -23,9 +23,9 @@ both() ->
 main() ->
 	{_, Data} = file:read_file(?FILENAME),
 	[Chosen|Boards] = binary:split(Data, <<"\n\n">>, [global, trim_all]),
-	ChosenNums = lists:map(fun erlang:binary_to_integer/1, string:lexemes(Chosen, ",")),
+	ChosenNums = lists:map(fun binary_to_integer/1, string:lexemes(Chosen, ",")),
 	BinaryBoardsList = [binary:split(Board, <<"\n">>, [global, trim_all]) || Board <- Boards],
-	ProperBoards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(Number) -> {erlang:binary_to_integer(Number), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BinaryBoardsList), %% God, fogive me for this
+	ProperBoards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(Number) -> {binary_to_integer(Number), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BinaryBoardsList), %% God, fogive me for this
 	markBoards(ProperBoards, tl(ChosenNums), hd(ChosenNums)).
 
 markBoards(Boards, [NextNum|ChosenNums], ChosenNum) ->
@@ -39,7 +39,7 @@ markBoard(Board, ChosenNum) ->
 	MarkedBoard = lists:map(fun(Row) -> markRow(Row, ChosenNum) end, Board),
 	case checkBoard(MarkedBoard) of
 		true  ->
-			io:format("Sum: ~p~n", [ChosenNum * sum(lists:flatten(MarkedBoard), 0)]),
+			io:format("Score: ~p~n", [ChosenNum * sum(lists:flatten(MarkedBoard), 0)]),
 			[];
 		false -> MarkedBoard
 	end.
