@@ -3,7 +3,7 @@
 -define(FILENAME, d4_input).
 
 -type status()	:: marked | unmarked.
--type cell()	:: {GuessNumber :: integer(), status()}.
+-type cell()	:: {Guess :: integer(), status()}.
 -type row()		:: [cell()].
 -type board()	:: [row()].
 -type boards()	:: [board()].
@@ -22,11 +22,12 @@ both() ->
 
 main() ->
 	{_, Data} = file:read_file(?FILENAME),
-	[Chosen|Boards] = binary:split(Data, <<"\n\n">>, [global, trim_all]),
-	ChosenNums = lists:map(fun binary_to_integer/1, string:lexemes(Chosen, ",")),
-	BinaryBoardsList = [binary:split(Board, <<"\n">>, [global, trim_all]) || Board <- Boards],
-	ProperBoards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(Number) -> {binary_to_integer(Number), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BinaryBoardsList), %% God, fogive me for this
-	markBoards(ProperBoards, ChosenNums).
+	[ChosenNumsRaw|BoardsRaw] = binary:split(Data, <<"\n\n">>, [global, trim_all]),
+	ChosenNums = lists:map(fun binary_to_integer/1, string:lexemes(ChosenNumsRaw, ",")),
+	BoardsRawList = [binary:split(BoardRaw, <<"\n">>, [global, trim_all]) || BoardRaw <- BoardsRaw],
+	%% God, forgive me for this next line.
+	Boards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(GuessRaw) -> {binary_to_integer(GuessRaw), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BoardsRawList),
+	markBoards(Boards, ChosenNums).
 
 markBoards(Boards, [ChosenNum|ChosenNums]) ->
 	MarkedBoards = lists:map(fun(Board) -> markBoard(Board, ChosenNum) end, Boards),
@@ -45,8 +46,8 @@ markBoard(Board, ChosenNum) ->
 	end.
 markRow(Row, ChosenNum) ->
 	lists:map(fun(Cell) -> markCell(Cell, ChosenNum) end, Row).
-markCell({GuessNumber, _}, ChosenNum) when GuessNumber =:= ChosenNum ->
-	{GuessNumber, marked};
+markCell({Guess, _}, ChosenNum) when Guess =:= ChosenNum ->
+	{Guess, marked};
 markCell(Cell, _) -> Cell.
 
 checkBoard(Board) ->
@@ -59,8 +60,8 @@ checkCell(_) 			-> false.
 
 sum([], Acc) ->
 	Acc;
-sum([{GuessNumber, unmarked}|T], Acc) ->
-	sum(T, Acc+GuessNumber);
+sum([{Guess, unmarked}|T], Acc) ->
+	sum(T, Acc+Guess);
 sum([_|T], Acc) ->
 	sum(T, Acc).
 
