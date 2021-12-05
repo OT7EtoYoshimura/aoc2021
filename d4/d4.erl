@@ -22,7 +22,9 @@ main() ->
 	ChosenNums = lists:map(fun binary_to_integer/1, string:lexemes(ChosenNumsRaw, ",")),
 	BoardsRawList = [binary:split(BoardRaw, <<"\n">>, [global, trim_all]) || BoardRaw <- BoardsRaw],
 	%% God, forgive me for this next line.
-	Boards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(GuessRaw) -> {binary_to_integer(GuessRaw), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BoardsRawList),
+	%Boards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(GuessRaw) -> {binary_to_integer(GuessRaw), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BoardsRawList),
+	% Pick your poison
+	Boards = [[[ {binary_to_integer(GuessRaw), unmarked} || GuessRaw <- string:lexemes(Row, " ")] || Row <- Board] || Board <- BoardsRawList],
 	markBoards(Boards, ChosenNums),
 	io:format("Microseconds: ~p~n", [timer:now_diff(os:timestamp(), StartTimestamp)]).
 
