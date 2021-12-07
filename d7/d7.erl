@@ -11,17 +11,17 @@ main() ->
 	Fuel2       = lists:min(proplists:get_keys(PropList)),
 	{Fuel1, Fuel2}.
 
-total_fuel1(Pos, {Fuel, Mean}) ->
-	{Fuel + abs(Mean-Pos), Mean}.
+total_fuel1(Pos, {Fuel, Median}) ->
+	{Fuel + abs(Median-Pos), Median}.
 
 total_fuel2(Pos, {Fuel, Goal}) ->
 	{Fuel + crab_fuel2(Pos, Goal), Goal}.
 
-crab_fuel2(Pos, Mean) ->
-	crab_fuel2(Pos, Mean, 1, 0).
-crab_fuel2(Pos, Mean, _Inc, Fuel) when Pos =:= Mean ->
+crab_fuel2(Pos, Goal) ->
+	crab_fuel2(Pos, Goal, 1, 0).
+crab_fuel2(Pos, Goal, _Inc, Fuel) when Pos =:= Goal ->
 	Fuel;
-crab_fuel2(Pos, Mean, Incr, Fuel) when Pos > Mean ->
-	crab_fuel2(Pos-1, Mean, Incr+1, Fuel+Incr);
-crab_fuel2(Pos, Mean, Incr, Fuel) when Pos < Mean ->
-	crab_fuel2(Pos+1, Mean, Incr+1, Fuel+Incr).
+crab_fuel2(Pos, Goal, Incr, Fuel) when Pos > Goal ->
+	crab_fuel2(Pos-1, Goal, Incr+1, Fuel+Incr);
+crab_fuel2(Pos, Goal, Incr, Fuel) when Pos < Goal ->
+	crab_fuel2(Pos+1, Goal, Incr+1, Fuel+Incr).

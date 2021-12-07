@@ -1,6 +1,6 @@
 -module(d4).
 -export([both/0]).
--define(FILENAME, d4_bigboi).
+-define(FILENAME, 'd4_bigboi.in').
 
 -type status()	:: marked | unmarked.
 -type cell()	:: {Guess :: integer(), status()}.

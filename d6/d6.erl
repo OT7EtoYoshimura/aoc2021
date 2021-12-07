@@ -1,6 +1,6 @@
 -module(d6).
 -export([main/0]).
--define(FILENAME, d6_input).
+-define(FILENAME, 'd6.in').
 -define(DAYS, 256).
 
 main() ->

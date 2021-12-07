@@ -1,6 +1,6 @@
 -module(d2).
 -export([p1/0, p2/0]).
--define(FILENAME, d2_input).
+-define(FILENAME, 'd2.in').
 
 p1() ->
 	ListOfTuples = read(?FILENAME),
