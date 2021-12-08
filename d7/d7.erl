@@ -7,12 +7,11 @@ main() ->
 	CrabsPos   = lists:map(fun binary_to_integer/1, string:lexemes(Raw, ",\n")),
 	CrabsCount = length(CrabsPos),
 	Median     = lists:nth(round(CrabsCount/2), lists:sort(CrabsPos)),
-	MeanFloor  = floor(lists:sum(CrabsPos) / CrabsCount),
-	MeanCeil   =  ceil(lists:sum(CrabsPos) / CrabsCount),
-	Fuel1      =     lists:sum(lists:map(fun(Elem) ->           abs(Median   -Elem)  end, CrabsPos)),
-	Fuel2      = min(lists:sum(lists:map(fun(Elem) -> gauss_sum(abs(MeanCeil -Elem)) end, CrabsPos)),
-					 lists:sum(lists:map(fun(Elem) -> gauss_sum(abs(MeanFloor-Elem)) end, CrabsPos))),
-	{Fuel1, trunc(Fuel2)}.
+	Mean       = lists:sum(CrabsPos) / CrabsCount,
+	Fuel1      =     lists:foldl(fun(Elem, Sum) -> Sum +          abs(Median     -Elem)  end, 0, CrabsPos),
+	Fuel2      = min(lists:foldl(fun(Elem, Sum) -> Sum + ints_sum(abs( ceil(Mean)-Elem)) end, 0, CrabsPos),
+	                 lists:foldl(fun(Elem, Sum) -> Sum + ints_sum(abs(floor(Mean)-Elem)) end, 0, CrabsPos)),
+	{{p1, Fuel1}, {p2, trunc(Fuel2)}}.
 
-gauss_sum(Goal) ->
+ints_sum(Goal) ->
 	Goal*(Goal+1)/2.
