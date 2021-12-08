@@ -1,6 +1,6 @@
 -module(d7).
 -export([main/0]).
--define(FILENAME, 'd7_bigboi.in').
+-define(FILENAME, 'd7.in').
 
 main() ->
 	{_, Raw}   = file:read_file(?FILENAME),
@@ -19,4 +19,4 @@ fuel1(Pos, {Fuel, Median}) ->
 
 fuel2(Pos, {Fuel, Mean}) ->
 	Goal = abs(Mean-Pos),
-	{Fuel + round(Goal*(Goal+1)/2), Mean}.
+	{Fuel + Goal*(Goal+1)/2, Mean}.
