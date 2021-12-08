@@ -9,14 +9,10 @@ main() ->
 	Median     = lists:nth(round(CrabsCount/2), lists:sort(CrabsPos)),
 	MeanFloor  = floor(lists:sum(CrabsPos) / CrabsCount),
 	MeanCeil   =  ceil(lists:sum(CrabsPos) / CrabsCount),
-	Fuel1      =     element(1, lists:foldl(fun fuel1/2, {0, Median   }, CrabsPos)),
-	Fuel2      = min(element(1, lists:foldl(fun fuel2/2, {0, MeanCeil }, CrabsPos)),
-	                 element(1, lists:foldl(fun fuel2/2, {0, MeanFloor}, CrabsPos))),
-	{Fuel1, Fuel2}.
+	Fuel1      =     lists:sum(lists:map(fun(Elem) ->           abs(Median   -Elem)  end, CrabsPos)),
+	Fuel2      = min(lists:sum(lists:map(fun(Elem) -> gauss_sum(abs(MeanCeil -Elem)) end, CrabsPos)),
+					 lists:sum(lists:map(fun(Elem) -> gauss_sum(abs(MeanFloor-Elem)) end, CrabsPos))),
+	{Fuel1, trunc(Fuel2)}.
 
-fuel1(Pos, {Fuel, Median}) ->
-	{Fuel + abs(Median-Pos), Median}.
-
-fuel2(Pos, {Fuel, Mean}) ->
-	Goal = abs(Mean-Pos),
-	{Fuel + Goal*(Goal+1)/2, Mean}.
+gauss_sum(Goal) ->
+	Goal*(Goal+1)/2.
