@@ -7,8 +7,10 @@ p1() ->
 	BinaryList = binary:split(File, <<"\n">>, [global, trim_all]),
 	CountOnes =
 	lists:foldl(
-	  fun(Elem, [FirstC, SecondC, ThirdC, FourthC, FifthC, SixthC, SeventhC, EighthC, NinthC, TenthC, EleventhC, TwelvethC]) ->
-			  <<First:8, Second:8, Third:8, Fourth:8, Fifth:8, Sixth:8, Seventh:8, Eighth:8, Ninth:8, Tenth:8, Eleventh:8, Twelveth:8>> = Elem,
+	  fun(Elem, [FirstC, SecondC, ThirdC, FourthC, FifthC, SixthC, SeventhC,
+							 EighthC, NinthC, TenthC, EleventhC, TwelvethC]) ->
+			  <<First:8, Second:8, Third:8, Fourth:8, Fifth:8, Sixth:8, Seventh:8,
+					Eighth:8, Ninth:8, Tenth:8, Eleventh:8, Twelveth:8>> = Elem,
 			  [
 			   if <<First>> == <<"1">>		->  FirstC+1;		true	-> FirstC end,
 			   if <<Second>> == <<"1">>		->  SecondC+1;		true	-> SecondC end,
@@ -32,5 +34,6 @@ p1() ->
 		 (_)	-> {<<"0">>, <<"1">>} end,
 	  CountOnes),
 	{GammaBits, EpsilonBits} = lists:unzip(GammaEpsilon),
-	binary_to_integer(list_to_binary(GammaBits), 2) * binary_to_integer(list_to_binary(EpsilonBits), 2).
+	binary_to_integer(list_to_binary(GammaBits), 2)
+	* binary_to_integer(list_to_binary(EpsilonBits), 2).
 

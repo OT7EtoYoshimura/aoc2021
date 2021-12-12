@@ -1,59 +1,70 @@
 -module(d4).
--export([both/0]).
+-export([main/0]).
 -include("../include/aoc2021.hrl").
 
+-type chosen()	:: non_neg_integer().
+-type score()		:: non_neg_integer().
 -type status()	:: marked | unmarked.
--type cell()	:: {Guess :: integer(), status()}.
--type row()		:: [cell()].
--type board()	:: [row()].
--type boards()	:: [board()].
-
-both() ->
-	spawn(fun main/0).
+-type cell()		:: {Guess :: non_neg_integer(), status()}.
+-type row()			:: [cell()].
+-type board()		:: [row()].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Impure IO Garbage %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 main() ->
-	StartTimestamp = os:timestamp(),
 	{_, Data} = file:read_file(?IN),
-	[ChosenNumsRaw|BoardsRaw] = binary:split(Data, <<"\n\n">>, [global, trim_all]),
-	ChosenNums = lists:map(fun binary_to_integer/1, string:lexemes(ChosenNumsRaw, ",")),
-	BoardsRawList = [binary:split(BoardRaw, <<"\n">>, [global, trim_all]) || BoardRaw <- BoardsRaw],
+	[ChosenNumsRaw|BoardsRaw] = binary:split(Data, <<"\n\n">>,
+																					 [global, trim_all]),
+	ChosenNums = lists:map(fun binary_to_integer/1,
+												 string:lexemes(ChosenNumsRaw, ",")),
+	BoardsRawList = [binary:split(BoardRaw, <<"\n">>, [global, trim_all])
+									 || BoardRaw <- BoardsRaw],
 	%% God, forgive me for this next line.
-	%Boards = lists:map(fun(Board) -> lists:map(fun(Row) -> lists:map(fun(GuessRaw) -> {binary_to_integer(GuessRaw), unmarked} end, string:lexemes(Row, " ")) end, Board) end, BoardsRawList),
-	% Pick your poison
-	Boards = [[[ {binary_to_integer(GuessRaw), unmarked} || GuessRaw <- string:lexemes(Row, " ")] || Row <- Board] || Board <- BoardsRawList],
-	markBoards(Boards, ChosenNums),
-	io:format("Microseconds: ~p~n", [timer:now_diff(os:timestamp(), StartTimestamp)]).
+%	Boards = lists:map(fun(Board) ->
+%												 lists:map(fun(Row) ->
+%																			 lists:map(fun(GuessRaw) ->
+%																										 {binary_to_integer(GuessRaw), unmarked}
+%																								 end, string:lexemes(Row, " "))
+%																	 end, Board)
+%										 end, BoardsRawList),
+	%% Pick your poison
+	Boards = [[[ {binary_to_integer(GuessRaw), unmarked}
+							 || GuessRaw <- string:lexemes(Row, " ")]
+						 || Row <- Board]
+						|| Board <- BoardsRawList],
+	markBoards(Boards, ChosenNums).
 
 %%%%%%%%%%%%%%%%%%%%%%
 %%% The Good Stuff %%%
 %%%%%%%%%%%%%%%%%%%%%%
 
--spec markBoards(boards() | [[]], ChosenNums :: [integer()] | []) -> ok.
--spec markBoard(board(),   ChosenNum :: integer()) -> board().
--spec markRow(row(),       ChosenNum :: integer()) -> row().
--spec markCell(cell(),     ChosenNum :: integer()) -> cell().
+-spec markBoards([board() | score()], [chosen()])
+																-> {{p1, score()}, {p2, score()}};
+								([score()], []) -> {{p1, score()}, {p2, score()}}.
+-spec markBoard(score(), any()) -> score();
+							 (board(), chosen())	-> score() | board().
+-spec markRow(row(),     chosen())	-> row().
+-spec markCell(cell(),   chosen())	-> cell().
 -spec checkBoard(board())   -> true | false.
 -spec checkRow(row())       -> true | false.
 -spec checkCell(cell())     -> true | false.
--spec sum ([] | [cell()], Acc :: integer()) -> integer().
+-spec sum([] | [cell()], Acc :: non_neg_integer()) -> non_neg_integer().
 
 markBoards(Boards, [ChosenNum|ChosenNums]) ->
-	MarkedBoards = lists:map(fun(Board) -> markBoard(Board, ChosenNum) end, Boards),
+	MarkedBoards = lists:map(fun(Board) ->
+															 markBoard(Board, ChosenNum)
+													 end, Boards),
 	markBoards(MarkedBoards, ChosenNums);
-markBoards(_,_) ->
-	ok.
-markBoard([], _) ->
-	[];
+markBoards(Scores,[]) ->
+	{{p1, lists:last(Scores)}, {p2, hd(Scores)}}.
+markBoard(Score, _) when is_integer(Score) -> Score;
 markBoard(Board, ChosenNum) ->
 	MarkedBoard = lists:map(fun(Row) -> markRow(Row, ChosenNum) end, Board),
 	case checkBoard(MarkedBoard) of
 		true  ->
-			io:format("Score: ~p~n", [ChosenNum * sum(lists:flatten(MarkedBoard), 0)]),
-			[];
+			ChosenNum * sum(lists:flatten(MarkedBoard), 0);
 		false -> MarkedBoard
 	end.
 markRow(Row, ChosenNum) ->
@@ -77,7 +88,8 @@ sum([{Guess, unmarked}|T], Acc) ->
 sum([_|T], Acc) ->
 	sum(T, Acc).
 
+-spec transpose([[]|_])					-> [];
+               (M :: [list()])  -> [list()].
 transpose([[]|_]) -> [];
 transpose(M) ->
   [lists:map(fun hd/1, M) | transpose(lists:map(fun tl/1, M))].
-

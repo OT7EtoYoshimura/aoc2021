@@ -5,7 +5,8 @@
 
 main() ->
 	{_, Raw} = file:read_file(?IN),
-	Fish = [list_to_integer(X) || X <- string:lexemes(lists:droplast(binary_to_list(Raw)), ",")],
+	Fish = [list_to_integer(X)
+					|| X <- string:lexemes(lists:droplast(binary_to_list(Raw)), ",")],
 	simulate(fishMap(Fish), ?DAYS).
 
 fishMap(FishList) ->

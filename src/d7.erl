@@ -8,9 +8,15 @@ main() ->
 	CrabsCount = length(CrabsPos),
 	Median     = lists:nth(round(CrabsCount/2), lists:sort(CrabsPos)),
 	Mean       = lists:sum(CrabsPos) / CrabsCount,
-	Fuel1      =     lists:foldl(fun(Elem, Sum) -> Sum +          abs(Median     -Elem)  end, 0, CrabsPos),
-	Fuel2      = min(lists:foldl(fun(Elem, Sum) -> Sum + ints_sum(abs( ceil(Mean)-Elem)) end, 0, CrabsPos),
-	                 lists:foldl(fun(Elem, Sum) -> Sum + ints_sum(abs(floor(Mean)-Elem)) end, 0, CrabsPos)),
+	Fuel1      =     lists:foldl(fun(Elem, Sum) ->
+																	 Sum +          abs(Median     -Elem)
+															 end, 0, CrabsPos),
+	Fuel2      = min(lists:foldl(fun(Elem, Sum) ->
+																	 Sum + ints_sum(abs( ceil(Mean)-Elem))
+															 end, 0, CrabsPos),
+	                 lists:foldl(fun(Elem, Sum) ->
+																	 Sum + ints_sum(abs(floor(Mean)-Elem))
+															 end, 0, CrabsPos)),
 	{{p1, Fuel1}, {p2, trunc(Fuel2)}}.
 
 ints_sum(Goal) ->
