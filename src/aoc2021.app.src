@@ -1,0 +1,14 @@
+{application, aoc2021,
+ [{description, "Advent Of Code 2021 Solutions"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["AGPL 3.0"]},
+  {links, []}
+ ]}.

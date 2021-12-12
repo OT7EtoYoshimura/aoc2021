@@ -1,6 +1,6 @@
 -module(d7).
 -export([main/0]).
--define(FILENAME, 'd7.in').
+-define(FILENAME, '../priv/d7.in').
 
 main() ->
 	{_, Raw}   = file:read_file(?FILENAME),

@@ -1,7 +1,7 @@
 -module(d1).
 -export([p1/0, p2/0, both/0,
 		 p1_spawn/0, p2_spawn/0, both_spawn/0, both_parallel_spawn/0]).
--define(FILENAME, 'd1_bigboi.in').
+-define(FILENAME, '../priv/d1_bigboi.in').
 
 -spec p1_tco(List :: [integer()], Count :: integer()) -> integer().
 -spec p2_tco(List :: [integer()], Count :: integer()) -> integer().

@@ -1,6 +1,6 @@
--module(d3).
+-module(d3p1).
 -export([p1/0]).
--define(FILENAME, 'd3.in').
+-define(FILENAME, '../priv/d3.in').
 
 p1() ->
 	{ok, File} = file:read_file(?FILENAME),
