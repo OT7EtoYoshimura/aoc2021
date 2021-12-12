@@ -1,6 +1,6 @@
 -module(d4).
 -export([both/0]).
--define(FILENAME, '../priv/d4_bigboi.in').
+-include("../include/aoc2021.hrl").
 
 -type status()	:: marked | unmarked.
 -type cell()	:: {Guess :: integer(), status()}.
@@ -17,7 +17,7 @@ both() ->
 
 main() ->
 	StartTimestamp = os:timestamp(),
-	{_, Data} = file:read_file(?FILENAME),
+	{_, Data} = file:read_file(?IN),
 	[ChosenNumsRaw|BoardsRaw] = binary:split(Data, <<"\n\n">>, [global, trim_all]),
 	ChosenNums = lists:map(fun binary_to_integer/1, string:lexemes(ChosenNumsRaw, ",")),
 	BoardsRawList = [binary:split(BoardRaw, <<"\n">>, [global, trim_all]) || BoardRaw <- BoardsRaw],

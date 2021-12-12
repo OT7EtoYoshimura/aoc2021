@@ -1,9 +1,9 @@
 -module(d7).
 -export([main/0]).
--define(FILENAME, '../priv/d7.in').
+-include("../include/aoc2021.hrl").
 
 main() ->
-	{_, Raw}   = file:read_file(?FILENAME),
+	{_, Raw}   = file:read_file(?IN),
 	CrabsPos   = lists:map(fun binary_to_integer/1, string:lexemes(Raw, ",\n")),
 	CrabsCount = length(CrabsPos),
 	Median     = lists:nth(round(CrabsCount/2), lists:sort(CrabsPos)),

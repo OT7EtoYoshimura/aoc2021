@@ -18,5 +18,4 @@ _build
 rebar3.crashdump
 *~
 *forums*
-*.in
 .erlang.mk

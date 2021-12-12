@@ -1,9 +1,9 @@
 -module(d3p1).
 -export([p1/0]).
--define(FILENAME, '../priv/d3.in').
+-include("../include/aoc2021.hrl").
 
 p1() ->
-	{ok, File} = file:read_file(?FILENAME),
+	{ok, File} = file:read_file(?IN),
 	BinaryList = binary:split(File, <<"\n">>, [global, trim_all]),
 	CountOnes =
 	lists:foldl(

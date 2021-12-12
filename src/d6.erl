@@ -1,10 +1,10 @@
 -module(d6).
 -export([main/0]).
--define(FILENAME, '../priv/d6.in').
+-include("../include/aoc2021.hrl").
 -define(DAYS, 256).
 
 main() ->
-	{_, Raw} = file:read_file(?FILENAME),
+	{_, Raw} = file:read_file(?IN),
 	Fish = [list_to_integer(X) || X <- string:lexemes(lists:droplast(binary_to_list(Raw)), ",")],
 	simulate(fishMap(Fish), ?DAYS).
 

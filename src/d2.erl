@@ -1,9 +1,9 @@
 -module(d2).
 -export([p1/0, p2/0]).
--define(FILENAME, '../priv/d2.in').
+-include("../include/aoc2021.hrl").
 
 p1() ->
-	ListOfTuples = read(?FILENAME),
+	ListOfTuples = read(?IN),
 	p1(ListOfTuples, 0, 0).
 p1([], Horizontal, Depth) ->
 	io:format("Horizontal: ~p~nDepth: ~p~nMultiplied: ~p~n", [Horizontal, Depth, Horizontal*Depth]);
@@ -15,7 +15,7 @@ p1([{up, Amount}|T], Horizontal, Depth) ->
 	p1(T, Horizontal, Depth-Amount).
 
 p2() ->
-    ListOfTuples = read(?FILENAME),
+    ListOfTuples = read(?IN),
     p2(ListOfTuples, 0, 0, 0).
 p2([], Horizontal, Depth, _Aim) ->
     io:format("Horizontal: ~p~nDepth: ~p~nMultiplied: ~p~n", [Horizontal, Depth, Horizontal*Depth]);
