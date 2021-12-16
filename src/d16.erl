@@ -1,21 +1,44 @@
 -module(d16).
--export([main/0]).
+-export([main/1, main/0]).
 -include("../include/aoc2021.hrl").
 -type packet()
-    :: {literal,  Ver :: bitstring(), Val :: non_neg_integer()}
-    |  {operator, Ver :: bitstring(), Val :: non_neg_integer(), [packet()]}.
+    :: {literal,  Ver :: bitstring(), Val  :: non_neg_integer()}
+    |  {operator, Ver :: bitstring(), Type :: 0..7, [packet()]}.
 
 main() ->
-    {_, Raw} = file:read_file(?IN),
+    main(?IN).
+main(Bits) when is_bitstring(Bits) ->
+    {Packet, _Padding} = parse_packet(binary:decode_hex(Bits)),
+    {{p1, ver_sum(Packet,0)}, {p2, eval(Packet)}};
+main(Filename) ->
+    {_, Raw} = file:read_file(Filename),
     Trimmed  = string:trim(Raw),
-    {Packet, _Padding} = parse_packet(binary:decode_hex(Trimmed)),
-    ver_sum(Packet,0).
+    main(Trimmed).
 
 -spec ver_sum(packet(), non_neg_integer()) -> non_neg_integer().
 ver_sum({literal, Ver, _}, Acc) ->
     Acc + Ver;
 ver_sum({operator, Ver, _, Packets}, Acc) ->
     lists:foldl(fun ver_sum/2, Acc + Ver, Packets).
+
+eval({literal, _, Val}) -> Val;
+eval({operator, _, 0, Operands}) ->
+    Helper = fun(Operand, Acc) -> eval(Operand) + Acc end,
+    lists:foldl(Helper, 0, Operands);
+eval({operator, _, 1, Operands}) ->
+    Helper = fun(Operand, Acc) -> eval(Operand) * Acc end,
+    lists:foldl(Helper, 1, Operands);
+eval({operator, _, 2, Operands}) -> lists:min(lists:map(fun eval/1, Operands));
+eval({operator, _, 3, Operands}) -> lists:max(lists:map(fun eval/1, Operands));
+eval({operator, _, 5, [A,B]}) ->
+    AA = eval(A), BB = eval(B),
+    if AA > BB -> 1; true -> 0 end;
+eval({operator, _, 6, [A,B]}) ->
+    AA = eval(A), BB = eval(B),
+    if AA < BB -> 1; true -> 0 end;
+eval({operator, _, 7, [A,B]}) ->
+    AA = eval(A), BB = eval(B),
+    if AA =:= BB -> 1; true -> 0 end.
 
 -spec parse_packet(bitstring()) -> {packet(), bitstring()}.
 parse_packet(<<Ver:3, 4:3, Groups/bits>>) ->
