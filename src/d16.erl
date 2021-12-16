@@ -2,11 +2,12 @@
 -export([main/1, main/0]).
 -include("../include/aoc2021.hrl").
 -type packet()
-    :: {literal,  Ver :: bitstring(), Val  :: non_neg_integer()}
+    :: {literal,  Ver :: bitstring(), Val  :: uint()}
     |  {operator, Ver :: bitstring(), Type :: 0..7, [packet()]}.
 
-main() ->
-    main(?IN).
+-spec main() -> {{p1,uint()}, {p2, uint()}}.
+main() -> main(?IN).
+-spec main(bitstring() | string()) -> {{p1, uint()},{p2, uint()}}.
 main(Bits) when is_bitstring(Bits) ->
     {Packet, _Padding} = parse_packet(binary:decode_hex(Bits)),
     {{p1, ver_sum(Packet,0)}, {p2, eval(Packet)}};
@@ -15,12 +16,13 @@ main(Filename) ->
     Trimmed  = string:trim(Raw),
     main(Trimmed).
 
--spec ver_sum(packet(), non_neg_integer()) -> non_neg_integer().
+-spec ver_sum(packet(), uint()) -> uint().
 ver_sum({literal, Ver, _}, Acc) ->
     Acc + Ver;
 ver_sum({operator, Ver, _, Packets}, Acc) ->
     lists:foldl(fun ver_sum/2, Acc + Ver, Packets).
 
+-spec eval(packet()) -> uint().
 eval({literal, _, Val}) -> Val;
 eval({operator, _, 0, Operands}) ->
     Helper = fun(Operand, Acc) -> eval(Operand) + Acc end,
@@ -51,14 +53,14 @@ parse_packet(<<Ver: 3, Type:3, 1:1, SubPacketCnt:11, Operands/bits>>) ->
     {Packets, Rest} = parse_operands_cnt(SubPacketCnt, Operands, []),
     {{operator, Ver, Type, Packets}, Rest}.
 
--spec parse_group(bitstring(), non_neg_integer()) ->
-    {non_neg_integer(), bitstring()}.
+-spec parse_group(bitstring(), uint()) ->
+    {uint(), bitstring()}.
 parse_group(<<0:1, Group:4, Rest/bits>>, Acc) ->
     {Acc bsl 4 + Group, Rest};
 parse_group(<<1:1, Group:4, Rest/bits>>, Acc) ->
     parse_group(Rest, Acc bsl 4 + Group).
 
--spec parse_operands_cnt(non_neg_integer(), bitstring(), [packet()]) ->
+-spec parse_operands_cnt(uint(), bitstring(), [packet()]) ->
     {[packet()], bitstring()}.
 parse_operands_cnt(0  , Bits, Acc) ->
     {Acc, Bits};
@@ -66,7 +68,7 @@ parse_operands_cnt(Cnt, Bits, Acc) ->
     {Packet, Rest} = parse_packet(Bits),
     parse_operands_cnt(Cnt-1, Rest, Acc ++ [Packet]).
 
--spec parse_operands_len(non_neg_integer(), bitstring(), [packet()]) ->
+-spec parse_operands_len(uint(), bitstring(), [packet()]) ->
     {[packet()], bitstring()}.
 parse_operands_len(0  , Bits, Acc) ->
     {Acc, Bits};
