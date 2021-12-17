@@ -1,22 +1,25 @@
 -module(d17).
--export([p1/4, p1/0]).
+-export([main/0, main/4]).
 -include("../include/aoc2021.hrl").
 -define(XMIN, 117).
 -define(XMAX, 164).
 -define(YMIN,-140).
 -define(YMAX, -89).
 
-p1() ->
-    p1(?XMIN, ?XMAX, ?YMIN, ?YMAX).
-p1(XMin, XMax, YMin, YMax) ->
+main() ->
+    main(?XMIN, ?XMAX, ?YMIN, ?YMAX).
+main(XMin, XMax, YMin, YMax) ->
     Xs = x_range(XMin, XMax),
     Ys = lists:seq(abs(YMin), YMin, -1),
-    find_y(Xs, Ys, YMin, YMax).
+    solve(Xs, Ys, YMin, YMax).
 
--spec find_y([uint()], [integer()], integer(), integer()) -> integer().
-find_y(Xs, Ys, YMin, YMax) ->
-    MaxYVel = hd([Y || Y <- Ys, X <- Xs, hits_target(X,Y,YMin,YMax)]),
-    trunc(int_sum(MaxYVel)).
+-spec solve([uint()], [integer()], integer(), integer()) -> {{p1,integer()},{p2,integer()}}.
+solve(Xs, Ys, YMin, YMax) ->
+    Vels = [{X,Y} || Y <- Ys, X <- Xs, hits_target(X,Y,YMin,YMax)],
+    {_,MaxYVel} = hd(Vels),
+    MaxYPos = trunc(int_sum(MaxYVel)),
+    DistinctCnt = sets:size(sets:from_list(Vels)),
+    {{p1, MaxYPos}, {p2, DistinctCnt}}.
 
 hits_target(_X, Y,    0, _YVel, YMin,  YMax) when Y >= YMin andalso Y =< YMax  -> true;
 hits_target(_X, Y,    0, _YVel, YMin, _YMax) when Y < YMin                     -> false;
