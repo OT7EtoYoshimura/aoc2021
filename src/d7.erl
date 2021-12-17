@@ -18,6 +18,3 @@ main() ->
 																	 Sum + ints_sum(abs(floor(Mean)-Elem))
 															 end, 0, CrabsPos)),
 	{{p1, Fuel1}, {p2, trunc(Fuel2)}}.
-
-ints_sum(Goal) ->
-	Goal*(Goal+1)/2.

@@ -11,8 +11,9 @@ main() ->
 main(XMin,XMax,YMin,YMax) ->   
     Vels  = [{XVel,YVel} || XVel <- lists:seq(XMax, 0, -1), YVel <- lists:seq(abs(YMin), YMin, -1)],
     Range = {{XMin, XMax}, {YMin, YMax}},
-    Hit   = lists:filter(fun(V) -> m_throw(V, Range) end, Vels),
-    length(Hit).
+    Hits  = lists:filter(fun(V) -> m_throw(V, Range) end, Vels),
+    MaxYV = abs(?YMIN)-1,
+    {{p1, ints_sum(MaxYV)}, {p2, length(Hits)}}.
 
 m_throw({XVel,YVel}, Range) ->
     {Coords, Vels} = tick({0,0}, {XVel, YVel}),
